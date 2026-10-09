@@ -169,8 +169,8 @@ footer p+p{margin-top:6px}
    구글 시트 ID만 넣으면 실제 상품이 표시됩니다.
    (시트 공유: "링크가 있는 모든 사용자 - 뷰어")              */
 const CONFIG = {
-  SHEET_ID: "",          // 예: "1AbC...xyz"
-  SHEET_NAME: "상품",    // 시트 탭 이름
+  SHEET_ID: "1yQWZrqpCm2Vp6C95BpKVNYDVI9msB_VLSAUjB6EGmYc",
+  SHEET_GID: "0",        // 시트 탭 번호 (주소의 gid= 값)
 };
 
 /* 시트가 연결되지 않았을 때 보여줄 미리보기 데이터 */
@@ -317,17 +317,20 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 
 /* ---------- 데이터 로드 ---------- */
 async function load(){
-  let csv=SAMPLE_CSV,sample=true;
+  let csv=SAMPLE_CSV,sample=true,failed=false;
   if(CONFIG.SHEET_ID){
+    sample=false;
     try{
-      const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;
+      const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&gid=${CONFIG.SHEET_GID}&t=${Date.now()}`;
       const r=await fetch(url,{cache:"no-store"});
-      if(r.ok){csv=await r.text();sample=false;}
-    }catch(e){console.warn("시트 로드 실패, 샘플 표시",e);}
+      if(!r.ok) throw new Error(r.status);
+      csv=await r.text();
+    }catch(e){console.warn("시트 로드 실패",e);failed=true;csv="";}
   }
-  items=parseCSV(csv).map(normalize).filter(i=>i.name&&i.now);
+  items=csv?parseCSV(csv).map(normalize).filter(i=>i.name&&i.now):[];
   $("#sampleNote").style.display=sample?"block":"none";
   renderStats();renderChips();render();
+  if(failed) $("#grid").innerHTML=`<div class="empty">상품을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</div>`;
 }
 load();
 </script>
