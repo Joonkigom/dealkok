@@ -1,0 +1,40 @@
+name: 텔레그램 자동 발행
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "조용한 시간(23~07시)에도 바로 발행"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 시트 확인 후 텔레그램 발행
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+          FORCE: ${{ inputs.force && '1' || '0' }}
+        run: python post_telegram.py
+      - name: 발행 기록 저장
+        run: |
+          git config user.name "dealkok-bot"
+          git config user.email "dealkok-bot@users.noreply.github.com"
+          mkdir -p data && [ -f data/posted.json ] || echo '{}' > data/posted.json
+          git add data/posted.json
+          git diff --cached --quiet || (git commit -m "발행 기록 업데이트 [skip ci]" && git push)
