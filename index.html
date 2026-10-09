@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>딜콕 · 좋은 딜만 콕</title>
+<meta name="description" content="딜콕은 가격이 확실히 내려간 상품만 콕 집어 알려드립니다. 가격 이력으로 진짜 할인인지 확인하세요.">
+<meta property="og:title" content="딜콕 · 좋은 딜만 콕">
+<meta property="og:description" content="평소보다 확실히 싼 상품만, 가격 이력과 함께.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f6f6f4; --card:#ffffff; --line:#e7e7e3;
+  --text:#141414; --sub:#6b6b66; --faint:#a3a39d;
+  --accent:#ff4d2e; --accent-soft:#fff0ec; --ok:#1a7f4b;
+  --radius:16px; --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0f0e; --surface:#181816; --card:#1b1b19; --line:#2c2c29;
+    --text:#f2f2ee; --sub:#a3a39d; --faint:#6b6b66;
+    --accent:#ff6a4d; --accent-soft:#2a1a16; --ok:#4cc38a;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;height:60px}
+.logo{flex:none;white-space:nowrap;display:flex;align-items:center;gap:8px;font-weight:800;font-size:21px;letter-spacing:-.04em}
+.logo .dot{width:26px;height:26px;border-radius:50%;background:var(--accent);position:relative;flex:none}
+.logo .dot::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:var(--bg);transform:translate(-50%,-50%)}
+.logo small{font-size:13px;font-weight:500;color:var(--sub);letter-spacing:-.01em;margin-left:2px}
+.search{margin-left:auto;flex:0 1 320px;position:relative}
+.search input{width:100%;height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:0 16px 0 38px;font:inherit;font-size:14px;outline:none}
+.search input:focus{border-color:var(--text)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--faint)}
+
+.notice{font-size:12px;color:var(--sub);background:var(--surface);border-bottom:1px solid var(--line)}
+.notice .wrap{padding-top:8px;padding-bottom:8px}
+
+/* hero */
+.hero{padding:40px 0 24px}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.15;font-weight:800;letter-spacing:-.045em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin-top:10px;color:var(--sub);font-size:15px}
+.stats{display:flex;gap:24px;margin-top:22px;flex-wrap:wrap}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--sub)}
+
+/* controls */
+.controls{display:flex;gap:8px;align-items:center;padding:8px 0 20px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+select.sort{height:34px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-size:13px;padding:0 12px;cursor:pointer}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px;padding-bottom:48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s}
+.card:hover{transform:translateY(-2px)}
+.thumb{aspect-ratio:1/1;background:var(--surface);position:relative;display:grid;place-items:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .ph{font-size:56px;opacity:.9}
+.badges{position:absolute;left:10px;top:10px;display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;background:var(--text);color:var(--bg)}
+.badge.low{background:var(--accent);color:#fff}
+.body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.cat{font-size:11px;color:var(--faint);font-weight:600}
+.name{font-size:14px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px}
+.price{display:flex;align-items:baseline;gap:6px;margin-top:2px;flex-wrap:wrap}
+.price .pct{color:var(--accent);font-weight:800;font-size:18px}
+.price .now{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.price .was{color:var(--faint);font-size:12px;text-decoration:line-through}
+.unit{font-size:12px;color:var(--sub)}
+.spark{margin-top:auto;padding-top:8px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--faint)}
+.spark svg{flex:1;min-width:0;height:auto}
+
+.empty{padding:60px 0;text-align:center;color:var(--sub)}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:22px 20px 24px;max-height:92vh;overflow:auto}
+@media (min-width:640px){.modal{align-items:center}.sheet{border-radius:20px}}
+.sheet .x{float:right;background:none;border:0;color:var(--sub);font-size:22px;cursor:pointer;line-height:1}
+.sheet h2{font-size:18px;line-height:1.35;font-weight:700;margin:4px 30px 10px 0}
+.chart{margin:14px 0 6px;background:var(--surface);border-radius:12px;padding:12px}
+.chart svg{width:100%;height:auto;display:block}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 14px}
+.kv div{background:var(--surface);border-radius:10px;padding:10px}
+.kv span{display:block;font-size:11px;color:var(--sub)}
+.kv b{font-size:15px;font-variant-numeric:tabular-nums}
+.point{font-size:14px;color:var(--text);background:var(--accent-soft);border-radius:10px;padding:12px;margin-bottom:14px}
+.cta{display:flex;align-items:center;justify-content:center;height:52px;border-radius:14px;background:var(--accent);color:#fff;font-weight:700;font-size:16px}
+.fine{font-size:11px;color:var(--faint);margin-top:10px;text-align:center}
+
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:12px;color:var(--sub)}
+footer p+p{margin-top:6px}
+.sample{background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:600;border-radius:10px;padding:8px 12px;margin-bottom:14px;display:none}
+
+@media (max-width:520px){
+  .logo small{display:none}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .body{padding:12px}
+  .price .pct,.price .now{font-size:16px}
+  .hero{padding:28px 0 18px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#"><span class="dot"></span>딜콕<small>좋은 딜만 콕</small></a>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="상품 검색" aria-label="상품 검색">
+    </label>
+  </div>
+</header>
+<div class="notice"><div class="wrap">이 사이트는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div></div>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>평소보다 <em>확실히 싼</em> 것만,<br>딜콕이 콕 집어드려요.</h1>
+    <p>가격 이력으로 진짜 할인인지 확인하고 사세요.</p>
+    <div class="stats">
+      <div class="stat"><b id="sCount">-</b><span>지금 콕 딜</span></div>
+      <div class="stat"><b id="sLow">-</b><span>역대 최저가</span></div>
+      <div class="stat"><b id="sAvg">-</b><span>평균 할인율</span></div>
+    </div>
+  </section>
+
+  <div class="sample" id="sampleNote">미리보기용 샘플 데이터입니다. 구글 시트를 연결하면 실제 상품으로 바뀝니다.</div>
+
+  <div class="controls">
+    <div class="chips" id="chips"></div>
+    <select class="sort" id="sort" aria-label="정렬">
+      <option value="pct">할인율 높은 순</option>
+      <option value="new">최근 등록 순</option>
+      <option value="low">낮은 가격 순</option>
+    </select>
+  </div>
+
+  <section class="grid" id="grid"></section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>딜콕</b> · 좋은 딜만 콕</p>
+    <p>이 사이트는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+    <p>표시된 가격은 확인 시점 기준이며 판매처 사정에 따라 실시간으로 바뀔 수 있습니다. 구매 전 판매 페이지에서 최종 가격을 확인하세요.</p>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ============ 설정 ============
+   구글 시트 ID만 넣으면 실제 상품이 표시됩니다.
+   (시트 공유: "링크가 있는 모든 사용자 - 뷰어")              */
+const CONFIG = {
+  SHEET_ID: "",          // 예: "1AbC...xyz"
+  SHEET_NAME: "상품",    // 시트 탭 이름
+};
+
+/* 시트가 연결되지 않았을 때 보여줄 미리보기 데이터 */
+const SAMPLE_CSV = `상품명,카테고리,현재가,평소가,수량,단위,이미지,링크,추천포인트,가격이력,노출,등록일
+"제주삼다수 그린 무라벨 2L x 12병",생수·음료,12960,14400,12,병,,https://link.coupang.com/a/hImRQfIRgG,"리뷰 140만 개가 넘는 스테디셀러. 무라벨이라 분리배출이 편해요.","14400,14400,13900,14400,13500,13900,12960",Y,2026-10-09
+"[샘플] 3겹 데코 화장지 30롤",생활용품,15900,21900,30,롤,,#,"한 롤당 530원대. 평소 대비 27% 내려간 가격이에요.","21900,21500,21900,19900,21900,18900,15900",Y,2026-10-08
+"[샘플] 고농축 세탁세제 3L",생활용품,11900,14900,3,L,,#,"재구매 많은 대용량 세제. 1L당 4천원 아래로 내려왔어요.","14900,13900,14900,14900,12900,13900,11900",Y,2026-10-07
+"[샘플] 무선 이어폰 노이즈캔슬링",디지털,89000,119000,1,개,,#,"최근 3개월 중 가장 낮은 가격이에요.","119000,115000,109000,119000,99000,95000,89000",Y,2026-10-06
+"[샘플] 즉석밥 210g x 24개",식품,21900,25900,24,개,,#,"1개당 912원. 비상식량으로 쟁여두기 좋은 타이밍.","25900,24900,25900,23900,25900,22900,21900",Y,2026-10-05
+"[샘플] 아기 물티슈 캡형 100매 x 10팩",육아,13900,16900,10,팩,,#,"1팩당 1,390원. 평소 가격보다 3천원 저렴해요.","16900,16900,15900,16900,14900,16900,13900",Y,2026-10-04`;
+
+const EMOJI = {"생수·음료":"💧","생활용품":"🧺","디지털":"🎧","식품":"🍚","육아":"🍼","뷰티":"🧴","주방":"🍳","반려동물":"🐶"};
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){row.push(f);f="";}
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(f);rows.push(row);row=[];f=""; }
+    else f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row);}
+  const head=rows.shift().map(h=>h.trim());
+  return rows.filter(r=>r.some(v=>v.trim())).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??"").trim()])));
+}
+const num=v=>Number(String(v||"").replace(/[^\d.]/g,""))||0;
+const won=n=>n.toLocaleString("ko-KR")+"원";
+
+function normalize(r){
+  const now=num(r["현재가"]);
+  let hist=String(r["가격이력"]||"").split(/[,|\s]+/).map(num).filter(Boolean);
+  if(!hist.length||hist[hist.length-1]!==now) hist.push(now);
+  const was=num(r["평소가"])||Math.max(...hist);
+  const qty=num(r["수량"]);
+  const min=Math.min(...hist);
+  return {
+    name:r["상품명"],cat:r["카테고리"]||"기타",now,was,qty,unit:r["단위"]||"개",
+    img:r["이미지"],link:r["링크"]||"#",point:r["추천포인트"],hist,
+    show:(r["노출"]||"Y").toUpperCase()!=="N",date:r["등록일"]||"",
+    pct:was>now?Math.round((1-now/was)*100):0,
+    isLow:now<=min && hist.length>2,
+    min,max:Math.max(...hist),
+    avg:Math.round(hist.reduce((a,b)=>a+b,0)/hist.length)
+  };
+}
+
+/* ---------- 차트 ---------- */
+function spark(h,w=120,ht=28){
+  const mn=Math.min(...h),mx=Math.max(...h),r=mx-mn||1;
+  const pts=h.map((v,i)=>[(i/(h.length-1||1))*w,ht-3-((v-mn)/r)*(ht-6)]);
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const last=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${w} ${ht}"><path d="${d}" fill="none" stroke="var(--faint)" stroke-width="1.5"/><circle cx="${last[0]}" cy="${last[1]}" r="2.5" fill="var(--accent)"/></svg>`;
+}
+function bigChart(h){
+  const w=520,ht=150,pad=8,mn=Math.min(...h),mx=Math.max(...h),r=mx-mn||1;
+  const pts=h.map((v,i)=>[pad+(i/(h.length-1||1))*(w-pad*2),pad+12+(1-(v-mn)/r)*(ht-pad*2-24)]);
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=d+` L ${pts[pts.length-1][0]} ${ht} L ${pts[0][0]} ${ht} Z`;
+  const last=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${w} ${ht}">
+    <path d="${area}" fill="var(--accent)" opacity=".08"/>
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2" fill="var(--accent)" opacity=".5"/>`).join("")}
+    <circle cx="${last[0]}" cy="${last[1]}" r="4.5" fill="var(--accent)"/>
+  </svg>`;
+}
+
+/* ---------- 렌더 ---------- */
+let items=[],cat="전체";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function card(it,i){
+  const unit=it.qty>1?`${it.unit}당 ${won(Math.round(it.now/it.qty))}`:"";
+  return `<article class="card" data-i="${i}" tabindex="0">
+    <div class="thumb">
+      ${it.img?`<img src="${esc(it.img)}" alt="" loading="lazy">`:`<span class="ph">${EMOJI[it.cat]||"🛒"}</span>`}
+      <div class="badges">${it.isLow?'<span class="badge low">역대 최저가</span>':""}</div>
+    </div>
+    <div class="body">
+      <div class="cat">${esc(it.cat)}</div>
+      <div class="name">${esc(it.name)}</div>
+      <div class="price">${it.pct?`<span class="pct">${it.pct}%</span>`:""}<span class="now">${won(it.now)}</span>${it.pct?`<span class="was">${won(it.was)}</span>`:""}</div>
+      ${unit?`<div class="unit">${unit}</div>`:""}
+      <div class="spark">${spark(it.hist)}<span>가격추이</span></div>
+    </div>
+  </article>`;
+}
+
+function render(){
+  const q=$("#q").value.trim().toLowerCase();
+  const s=$("#sort").value;
+  let list=items.map((it,i)=>({it,i})).filter(({it})=>it.show&&(cat==="전체"||it.cat===cat)&&(!q||it.name.toLowerCase().includes(q)));
+  list.sort((a,b)=>s==="pct"?b.it.pct-a.it.pct:s==="low"?a.it.now-b.it.now:String(b.it.date).localeCompare(a.it.date));
+  $("#grid").innerHTML=list.length?list.map(({it,i})=>card(it,i)).join(""):`<div class="empty">조건에 맞는 딜이 없어요.</div>`;
+}
+
+function renderChips(){
+  const cats=["전체",...new Set(items.filter(i=>i.show).map(i=>i.cat))];
+  $("#chips").innerHTML=cats.map(c=>`<button class="chip" aria-pressed="${c===cat}">${esc(c)}</button>`).join("");
+}
+
+function renderStats(){
+  const v=items.filter(i=>i.show);
+  $("#sCount").textContent=v.length+"개";
+  $("#sLow").textContent=v.filter(i=>i.isLow).length+"개";
+  const ds=v.filter(i=>i.pct);
+  $("#sAvg").textContent=ds.length?Math.round(ds.reduce((a,b)=>a+b.pct,0)/ds.length)+"%":"-";
+}
+
+function openModal(it){
+  const unit=it.qty>1?`${it.unit}당 ${won(Math.round(it.now/it.qty))}`:"";
+  $("#sheet").innerHTML=`
+    <button class="x" aria-label="닫기">×</button>
+    <div class="cat">${esc(it.cat)}${it.isLow?' · <span style="color:var(--accent);font-weight:700">역대 최저가</span>':""}</div>
+    <h2>${esc(it.name)}</h2>
+    <div class="price">${it.pct?`<span class="pct">${it.pct}%</span>`:""}<span class="now">${won(it.now)}</span>${it.pct?`<span class="was">${won(it.was)}</span>`:""}</div>
+    ${unit?`<div class="unit">${unit}</div>`:""}
+    <div class="chart">${bigChart(it.hist)}</div>
+    <div class="kv">
+      <div><span>최저가</span><b>${won(it.min)}</b></div>
+      <div><span>평균가</span><b>${won(it.avg)}</b></div>
+      <div><span>최고가</span><b>${won(it.max)}</b></div>
+    </div>
+    ${it.point?`<div class="point">💡 ${esc(it.point)}</div>`:""}
+    <a class="cta" href="${esc(it.link)}" target="_blank" rel="sponsored nofollow noopener">쿠팡에서 지금 가격 보기</a>
+    <p class="fine">쿠팡 파트너스 활동의 일환으로 수수료를 제공받습니다 · 가격은 실시간으로 바뀔 수 있습니다</p>`;
+  $("#modal").classList.add("open");
+}
+function closeModal(){$("#modal").classList.remove("open");}
+
+/* ---------- 이벤트 ---------- */
+$("#q").addEventListener("input",render);
+$("#sort").addEventListener("change",render);
+$("#chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;cat=b.textContent;renderChips();render();});
+$("#grid").addEventListener("click",e=>{const c=e.target.closest(".card");if(c)openModal(items[c.dataset.i]);});
+$("#grid").addEventListener("keydown",e=>{if(e.key==="Enter"){const c=e.target.closest(".card");if(c)openModal(items[c.dataset.i]);}});
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal"||e.target.closest(".x"))closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+/* ---------- 데이터 로드 ---------- */
+async function load(){
+  let csv=SAMPLE_CSV,sample=true;
+  if(CONFIG.SHEET_ID){
+    try{
+      const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;
+      const r=await fetch(url,{cache:"no-store"});
+      if(r.ok){csv=await r.text();sample=false;}
+    }catch(e){console.warn("시트 로드 실패, 샘플 표시",e);}
+  }
+  items=parseCSV(csv).map(normalize).filter(i=>i.name&&i.now);
+  $("#sampleNote").style.display=sample?"block":"none";
+  renderStats();renderChips();render();
+}
+load();
+</script>
+</body>
+</html>
